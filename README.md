@@ -293,24 +293,3 @@ npx tsx app/cli.ts
 ## License
 
 FSL-1.1-MIT - See LICENSE file for details.
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
-
-## Architecture
-
-This MCP server follows best practices for 2025:
-
-- **Goal-oriented tools**: Each tool accomplishes a complete task rather than just exposing low-level APIs
-- **Clear descriptions**: All tools and parameters have detailed descriptions for AI agents
-- **Error handling**: Robust error handling with meaningful error messages
-- **State management**: Careful state management for the notification monitoring process
-- **Resource cleanup**: Proper cleanup of background processes when server closes
-
-The server uses a polling mechanism to detect new notifications by comparing current notifications with previously known ones, identifying new notifications by their unique keys.
