@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "esnext",
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "paths": {
+      "@app/*": [
+        "./app/*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "include": [
+    "./app/**/*.ts"
+  ]
+}
