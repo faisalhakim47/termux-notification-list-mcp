@@ -43,7 +43,7 @@ npm run build
 
 ## Usage
 
-### As MCP Server
+### As MCP Server (stdio)
 
 Run the server directly:
 ```bash
@@ -52,7 +52,84 @@ npx termux-notification-list-mcp
 
 Or use the built version:
 ```bash
-node dist/cli.js
+node dist/stdio.js
+```
+
+### As SSE Server
+
+The package can also run as an SSE server for web-based MCP clients:
+
+```bash
+npx termux-notification-list-mcp-sse
+```
+
+Or use the built version:
+```bash
+node dist/sse.js
+```
+
+The SSE server listens on port 3000 by default, configurable via PORT environment variable.
+
+### Running as a Background Service in Termux
+
+To run the SSE server indefinitely as a background service using runit:
+
+#### Automated Setup
+
+Run the provided setup script:
+```bash
+wget https://raw.githubusercontent.com/faisalhakim47/termux-notification-list-mcp/main/setup-service.sh
+chmod +x setup-service.sh
+./setup-service.sh
+```
+
+Note: After running the setup script, restart your Termux session or run `source $PREFIX/etc/profile` to use service management commands.
+
+#### Manual Setup
+
+1. Install termux-services:
+   ```bash
+   pkg install termux-services
+   ```
+
+2. Install the package globally:
+   ```bash
+   npm install -g termux-notification-list-mcp
+   ```
+
+3. Create the service directory:
+   ```bash
+   mkdir -p $PREFIX/var/service/termux-notification-sse
+   ```
+
+4. Create the run script:
+   ```bash
+   cat > $PREFIX/var/service/termux-notification-sse/run << 'EOF'
+   #!/bin/sh
+   exec termux-notification-list-mcp-sse
+   EOF
+   chmod +x $PREFIX/var/service/termux-notification-sse/run
+   ```
+
+5. Enable and start the service:
+   ```bash
+   sv-enable termux-notification-sse
+   ```
+
+The service will now run automatically and restart if it crashes. You can check its status with:
+```bash
+source $PREFIX/etc/profile  # If not already done
+sv status termux-notification-sse
+```
+
+Stop the service with:
+```bash
+sv down termux-notification-sse
+```
+
+Restart the service with:
+```bash
+sv restart termux-notification-sse
 ```
 
 ### Configuration for MCP Clients
@@ -69,6 +146,8 @@ Add to your MCP client configuration (e.g., Claude Desktop):
   }
 }
 ```
+
+For SSE clients, connect to `http://localhost:3000/sse`
 
 ## Available Tools
 

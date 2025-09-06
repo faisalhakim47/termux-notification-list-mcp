@@ -1,0 +1,2 @@
+#!/bin/sh
+exec node /home/faisalhakim47/Projects/faisalhakim47/termux-notification-list-mcp/dist/sse.js

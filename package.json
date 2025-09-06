@@ -1,6 +1,6 @@
 {
   "name": "termux-notification-list-mcp",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "displayName": "Termux Notification List MCP Server",
   "author": {
     "email": "faisalhakim47@gmail.com",
@@ -8,7 +8,10 @@
   },
   "license": "FSL-1.1-MIT",
   "type": "module",
-  "bin": "dist/stdio.js",
+  "bin": {
+    "termux-notification-list-mcp": "dist/stdio.js",
+    "termux-notification-list-mcp-sse": "dist/sse.js"
+  },
   "main": "dist/index.js",
   "files": [
     "dist"
@@ -20,7 +23,6 @@
     "test:smoke": "TERMUX_SSH_USER=u0_a630 TERMUX_SSH_HOST=192.168.1.25 TERMUX_SSH_PORT=8022 node --test **/*smoke*.test.ts"
   },
   "dependencies": {
-    "@libsql/client": "^0.15.12",
     "@modelcontextprotocol/sdk": "^1.17.4",
     "zod": "^3.23.8"
   },
