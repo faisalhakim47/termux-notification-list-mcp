@@ -4,12 +4,13 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import { createServer, ServerOptions } from 'node:http';
-import { readFileSync } from 'node:fs';
+import { createServer } from 'node:http';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { createTermuxNotificationListMcpServer } from '@app/termux-notification-list-mcp-server.js';
+import { TermuxNotificationMonitor } from '@app/termux-notification-monitor.js';
 
-const server = createTermuxNotificationListMcpServer();
+const monitor = new TermuxNotificationMonitor();
+const server = createTermuxNotificationListMcpServer(monitor);
 const transports: Record<string, SSEServerTransport> = {};
 
 const app = express();
@@ -56,6 +57,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Authentication middleware
 const authenticate = (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const authHeader = req.headers.authorization;
+  const queryToken = req.query.token as string; // Support token via query parameter for SSE
   const token = process.env.MCP_AUTH_TOKEN;
   const basicAuthUser = process.env.MCP_BASIC_USER;
   const basicAuthPass = process.env.MCP_BASIC_PASS;
@@ -65,13 +67,21 @@ const authenticate = (req: express.Request, res: express.Response, next: express
     return next();
   }
 
-  if (!authHeader) {
+  // Check for token authentication via query parameter (for SSE EventSource compatibility)
+  if (queryToken && token) {
+    if (queryToken !== token) {
+      return res.status(401).json({ error: 'Unauthorized: Invalid query token' });
+    }
+    return next();
+  }
+
+  if (!authHeader && !queryToken) {
     res.setHeader('WWW-Authenticate', 'Basic realm="MCP Server", Bearer');
     return res.status(401).json({ error: 'Unauthorized: Authentication required' });
   }
 
   // Check for Bearer token authentication
-  if (authHeader.startsWith('Bearer ')) {
+  if (authHeader && authHeader.startsWith('Bearer ')) {
     if (!token) {
       return res.status(401).json({ error: 'Unauthorized: Bearer token authentication not configured' });
     }
@@ -84,7 +94,7 @@ const authenticate = (req: express.Request, res: express.Response, next: express
   }
 
   // Check for HTTP Basic Authentication
-  if (authHeader.startsWith('Basic ')) {
+  if (authHeader && authHeader.startsWith('Basic ')) {
     if (!basicAuthUser || !basicAuthPass) {
       return res.status(401).json({ error: 'Unauthorized: Basic authentication not configured' });
     }
@@ -132,7 +142,23 @@ app.get('/sse', async (req: express.Request, res: express.Response) => {
     const transport = new SSEServerTransport('/messages', res);
     transports[transport.sessionId] = transport;
 
+    // Listen for new notifications and send them as SSE events
+    const notificationHandler = (notification: any) => {
+      try {
+        if (transports[transport.sessionId]) {
+          // Send notification as SSE event
+          res.write(`event: notification\n`);
+          res.write(`data: ${JSON.stringify(notification)}\n\n`);
+        }
+      } catch (error) {
+        console.error('Error sending notification SSE event:', error);
+      }
+    };
+
+    monitor.on('newNotification', notificationHandler);
+
     res.on('close', () => {
+      monitor.off('newNotification', notificationHandler);
       delete transports[transport.sessionId];
     });
 

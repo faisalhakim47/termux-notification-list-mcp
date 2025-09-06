@@ -84,11 +84,18 @@ The SSE server includes several security features for remote access:
 
 #### Authentication
 
-The server supports both Bearer token and HTTP Basic Authentication:
+The server supports Bearer token, HTTP Basic Authentication, and query parameter authentication:
 
 **Bearer Token Authentication:**
 ```bash
 curl -H "Authorization: Bearer your-token" https://your-server:3000/sse
+```
+
+**Query Parameter Authentication (for EventSource/SSE):**
+```bash
+curl "https://your-server:3000/sse?token=your-token"
+# Or in JavaScript EventSource:
+# new EventSource('https://your-server:3000/sse?token=your-token')
 ```
 
 **HTTP Basic Authentication:**

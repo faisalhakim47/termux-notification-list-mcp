@@ -1,6 +1,6 @@
 {
   "name": "termux-notification-list-mcp",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "displayName": "Termux Notification List MCP Server",
   "author": {
     "email": "faisalhakim47@gmail.com",

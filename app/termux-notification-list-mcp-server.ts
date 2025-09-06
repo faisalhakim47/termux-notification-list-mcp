@@ -132,9 +132,10 @@ export function createTermuxNotificationListMcpServer(notificationMonitor?: Noti
           notifications = notifications.slice(0, limit);
         }
 
+        const count = notifications.length;
         const responseText = notifications.length > 0
-          ? `Found ${notifications.length} notification(s):\n\n${JSON.stringify(notifications, null, 2)}`
-          : 'No notifications found.';
+          ? `Found ${count} notification${count === 1 ? '' : 's'}:\n\n${JSON.stringify(notifications, null, 2)}`
+          : 'Found 0 notifications:\n\n[]';
 
         return {
           content: [
