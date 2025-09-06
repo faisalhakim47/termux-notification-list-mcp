@@ -16,6 +16,7 @@
     "dist"
   ],
   "include": [
-    "./app/**/*.ts"
+    "./app/**/*.ts",
+    "./scripts/**/*.ts"
   ]
 }

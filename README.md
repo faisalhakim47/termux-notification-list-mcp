@@ -70,6 +70,58 @@ node dist/sse.js
 
 The SSE server listens on port 3000 by default, configurable via PORT environment variable.
 
+### Security Configuration
+
+The SSE server includes several security features for remote access:
+
+#### Environment Variables
+
+- `MCP_AUTH_TOKEN`: Bearer token for authentication (required for production)
+- `MCP_BASIC_USER`: Username for HTTP Basic Authentication
+- `MCP_BASIC_PASS`: Password for HTTP Basic Authentication
+- `ALLOWED_ORIGINS`: Comma-separated list of allowed CORS origins (default: `http://localhost:3000`)
+- `PORT`: Server port (default: 3000)
+
+#### Authentication
+
+The server supports both Bearer token and HTTP Basic Authentication:
+
+**Bearer Token Authentication:**
+```bash
+curl -H "Authorization: Bearer your-token" https://your-server:3000/sse
+```
+
+**HTTP Basic Authentication:**
+```bash
+curl -u username:password https://your-server:3000/sse
+```
+
+Or with explicit header:
+```bash
+curl -H "Authorization: Basic $(echo -n 'username:password' | base64)" https://your-server:3000/sse
+```
+
+**Configuration:**
+```bash
+# Bearer token
+export MCP_AUTH_TOKEN=your-secure-token
+
+# Basic auth
+export MCP_BASIC_USER=admin
+export MCP_BASIC_PASS=secure-password
+```
+
+You can enable both authentication methods simultaneously for maximum compatibility.
+
+#### Security Features
+
+- **Rate Limiting**: 100 requests per 15 minutes per IP
+- **CORS Protection**: Configurable allowed origins
+- **Input Validation**: JSON payload validation
+- **Helmet Security Headers**: XSS protection, HSTS, CSP
+- **TLS 1.2+**: Strong cipher suites for HTTPS
+- **Error Handling**: Secure error responses without information leakage
+
 ### Running as a Background Service in Termux
 
 To run the SSE server indefinitely as a background service using runit:

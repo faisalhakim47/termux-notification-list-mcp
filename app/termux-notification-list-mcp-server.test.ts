@@ -6,32 +6,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { createTermuxNotificationListMcpServer } from './termux-notification-list-mcp-server.js';
 import { MockNotificationMonitor } from './mock-notification-monitor.js';
 import { Notification } from './notification-monitor.js';
-
-export class MemoryTransport {
-  onmessage: ((msg: unknown) => void) | undefined;
-  onerror: ((err: unknown) => void) | undefined;
-  onclose: (() => void) | undefined;
-  _paired: MemoryTransport | null;
-  constructor() {
-    this.onmessage = undefined;
-    this.onerror = undefined;
-    this.onclose = undefined;
-    this._paired = null;
-  }
-  async start() { /* no-op */ }
-  async close() { this.onclose?.(); }
-  async send(message: unknown) {
-    if (!this._paired) throw new Error('No paired transport');
-    setImmediate(() => {
-      try {
-        this._paired!.onmessage?.(message);
-      }
-      catch (err) {
-        this._paired!.onerror?.(err);
-      }
-    });
-  }
-}
+import { MemoryTransport } from '@app/mcp-server-test-suite.js';
 
 suite('Termux Notification List MCP Server', function () {
   let clientTransport: MemoryTransport;
