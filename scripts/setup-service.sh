@@ -14,6 +14,11 @@ if [ -f "$PREFIX/etc/profile" ]; then
     . "$PREFIX/etc/profile"
 fi
 
+# Set SVDIR if not already set
+if [ -z "$SVDIR" ]; then
+    export SVDIR="$PREFIX/var/service"
+fi
+
 # Install termux-services if not already installed
 if ! command -v sv > /dev/null 2>&1; then
     echo "Installing termux-services..."
@@ -22,6 +27,12 @@ if ! command -v sv > /dev/null 2>&1; then
     if [ -f "$PREFIX/etc/profile" ]; then
         . "$PREFIX/etc/profile"
     fi
+fi
+
+# Install openssl if not already installed
+if ! command -v openssl > /dev/null 2>&1; then
+    echo "Installing openssl..."
+    pkg install openssl -y
 fi
 
 # Install the package globally
@@ -38,7 +49,12 @@ echo "Creating run script..."
 
 # Generate secure random token if not provided
 if [ -z "$MCP_AUTH_TOKEN" ]; then
-    MCP_AUTH_TOKEN=$(openssl rand -hex 32)
+    if command -v openssl > /dev/null 2>&1; then
+        MCP_AUTH_TOKEN=$(openssl rand -hex 32)
+    else
+        # Fallback to /dev/urandom if openssl is not available
+        MCP_AUTH_TOKEN=$(dd if=/dev/urandom bs=32 count=1 2>/dev/null | od -An -tx1 | tr -d ' \n')
+    fi
     echo "Generated MCP_AUTH_TOKEN: $MCP_AUTH_TOKEN"
 fi
 
