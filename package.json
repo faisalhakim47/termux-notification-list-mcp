@@ -1,6 +1,6 @@
 {
   "name": "termux-notification-list-mcp",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "displayName": "Termux Notification List MCP Server",
   "author": {
     "email": "faisalhakim47@gmail.com",
@@ -10,7 +10,9 @@
   "type": "module",
   "bin": {
     "termux-notification-list-mcp": "dist/stdio.js",
-    "termux-notification-list-mcp-sse": "dist/sse.js"
+    "termux-notification-list-mcp-sse": "dist/streamable-http.ts",
+    "termux-notification-mcp-stdio": "dist/stdio.ts",
+    "termux-notification-mcp-http": "dist/streamable-http.ts"
   },
   "main": "dist/index.js",
   "files": [

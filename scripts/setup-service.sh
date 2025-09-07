@@ -40,9 +40,11 @@ echo "Installing termux-notification-list-mcp globally..."
 npm install -g termux-notification-list-mcp
 
 # Create service directory
-SERVICE_DIR="$PREFIX/var/service/termux-notification-sse"
+SERVICE_DIR="$PREFIX/var/service/termux-notification-mcp"
 echo "Creating service directory: $SERVICE_DIR"
 mkdir -p "$SERVICE_DIR"
+mkdir -p "$SERVICE_DIR/log"
+ln -sf $PREFIX/share/termux-services/svlogger $SERVICE_DIR/log/run
 
 # Create run script with security environment variables
 echo "Creating run script..."
@@ -60,29 +62,16 @@ fi
 
 cat > "$SERVICE_DIR/run" << EOF
 #!/data/data/com.termux/files/usr/bin/sh
-# Security configuration - modify these values for production
-export MCP_AUTH_TOKEN="$MCP_AUTH_TOKEN"
-export MCP_BASIC_USER="${MCP_BASIC_USER:-}"
-export MCP_BASIC_PASS="${MCP_BASIC_PASS:-}"
-export ALLOWED_ORIGINS="${ALLOWED_ORIGINS:-http://localhost:3000}"
-export PORT="${PORT:-3000}"
+export TERMUX_NOTIFICATION_MCP_HTTP_PORT="${TERMUX_NOTIFICATION_MCP_HTTP_PORT:-3000}"
+export TERMUX_NOTIFICATION_MCP_BASIC_USER="${TERMUX_NOTIFICATION_MCP_BASIC_USER:-}"
+export TERMUX_NOTIFICATION_MCP_BASIC_PASS="${TERMUX_NOTIFICATION_MCP_BASIC_PASS:-}"
+export TERMUX_NOTIFICATION_MCP_ALLOWED_ORIGINS="${TERMUX_NOTIFICATION_MCP_ALLOWED_ORIGINS:-http://localhost:3000}"
+export TERMUX_NOTIFICATION_MCP_BEARER_TOKEN="$TERMUX_NOTIFICATION_MCP_BEARER_TOKEN"
 
-exec /data/data/com.termux/files/usr/bin/termux-notification-list-mcp-sse
+exec /data/data/com.termux/files/usr/bin/node /data/data/com.termux/files/usr/lib/node_modules/termux-notification-list-mcp/dist/streamable-http.js
 EOF
 
 chmod +x "$SERVICE_DIR/run"
 
-# Enable the service
 echo "Enabling service..."
-sv-enable termux-notification-sse
-
-echo "Setup complete! The SSE server should now be running."
-echo "Check status with: sv status termux-notification-sse"
-echo ""
-echo "Security Notes:"
-echo "- Set MCP_AUTH_TOKEN for Bearer token authentication"
-echo "- Set MCP_BASIC_USER and MCP_BASIC_PASS for HTTP Basic authentication"
-echo "- For production, enable HTTPS with proper SSL certificates"
-echo "- Configure ALLOWED_ORIGINS for CORS security"
-echo "- Review the README.md for detailed security configuration"
-echo "SSE endpoint: http://localhost:3000/sse"
+sv-enable termux-notification-mcp

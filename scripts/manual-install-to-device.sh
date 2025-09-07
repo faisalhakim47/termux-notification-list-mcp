@@ -21,6 +21,6 @@ npm run build
 npm pack
 scp -P 8022 termux-notification-list-mcp-${VERSION}.tgz ${SSH_USER}@${SSH_HOST}:/data/data/com.termux/files/home/
 ssh -p 8022 ${SSH_USER}@${SSH_HOST} npm i -g ./termux-notification-list-mcp-${VERSION}.tgz
-ssh -p 8022 ${SSH_USER}@${SSH_HOST} 'source $PREFIX/etc/profile && export SVDIR=$PREFIX/var/service && sv down termux-notification-sse && sv up termux-notification-sse'
+ssh -p 8022 ${SSH_USER}@${SSH_HOST} 'source $PREFIX/etc/profile && export SVDIR=$PREFIX/var/service && sv down termux-notification-mcp && sv up termux-notification-mcp'
 
 cd $ORIGINAL_DIR

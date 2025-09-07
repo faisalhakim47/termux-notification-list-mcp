@@ -158,37 +158,37 @@ Note: After running the setup script, restart your Termux session or run `source
 
 3. Create the service directory:
    ```bash
-   mkdir -p $PREFIX/var/service/termux-notification-sse
+   mkdir -p $PREFIX/var/service/termux-notification-mcp
    ```
 
 4. Create the run script:
    ```bash
-   cat > $PREFIX/var/service/termux-notification-sse/run << 'EOF'
+   cat > $PREFIX/var/service/termux-notification-mcp/run << 'EOF'
    #!/bin/sh
    exec termux-notification-list-mcp-sse
    EOF
-   chmod +x $PREFIX/var/service/termux-notification-sse/run
+   chmod +x $PREFIX/var/service/termux-notification-mcp/run
    ```
 
 5. Enable and start the service:
    ```bash
-   sv-enable termux-notification-sse
+   sv-enable termux-notification-mcp
    ```
 
 The service will now run automatically and restart if it crashes. You can check its status with:
 ```bash
 source $PREFIX/etc/profile  # If not already done
-sv status termux-notification-sse
+sv status termux-notification-mcp
 ```
 
 Stop the service with:
 ```bash
-sv down termux-notification-sse
+sv down termux-notification-mcp
 ```
 
 Restart the service with:
 ```bash
-sv restart termux-notification-sse
+sv restart termux-notification-mcp
 ```
 
 ### Configuration for MCP Clients
